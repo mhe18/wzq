@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>five in a row local</title>
+    <style type="text/css">
+        canvas{
+        display: block;
+        margin: 50px auto;
+        box-shadow: -2px -2px 2px #F3F2F2, 5px 5px 5px #6F6767;
+        }
+    </style>
+</head>
+
+<script>
+    function init(){
+            var host = "ws://localhost:12345/";
+            try{
+                socket = new WebSocket(host);
+                socket.onopen    = function(msg){ drawChessBoard(); };
+                socket.onmessage = function(msg){ console.log(msg.data);var loc=msg.data.split(','); oneStep(loc[0],loc[1],loc[2]);};
+                socket.onclose   = function(msg){ alert("lose") };
+                }
+            catch(ex){ log(ex); }
+        //$("msg").focus();
+        }
+</script>
+
+<body onload="init()">
+    <canvas id="mycanvas" width="600px" height="600px"></canvas>
+    <script type="text/javascript">
+        var socket
+        var chess = document.getElementById("mycanvas");
+        var context = chess.getContext('2d');
+        var me = 1;
+        var chessBox = [];
+        for(var i=0;i<19;i++){
+            chessBox[i]=[];
+            for(var j=0;j<19;j++){
+                chessBox[i][j]=0;
+            }
+        }
+
+        function drawChessBoard(){
+            for(var i=0;i<19;i++){
+                context.strokeStyle="#D6D1D1";
+                context.moveTo(30+i*30,30);
+                context.lineTo(30+i*30,570);
+                context.stroke();
+                context.moveTo(30,30+i*30);
+                context.lineTo(570,30+i*30);
+                context.stroke();
+            }
+        }
+        
+        function oneStep(i,j,k){
+            context.beginPath();
+            context.arc(30+i*30,30+j*30,13,0,2*Math.PI);
+            var g=context.createRadialGradient(30+i*30,30+j*30,13,30+i*30,30+j*30,0);
+            if(k==1){                           
+                g.addColorStop(0,'#0A0A0A');
+                g.addColorStop(1,'#636766');
+            }else {
+                g.addColorStop(0,'#D1D1D1');
+                g.addColorStop(1,'#F9F9F9');
+            }
+            context.fillStyle=g;
+            context.fill();
+            context.closePath();
+        }
+        chess.onclick=function(e){
+            var x = e.offsetX;
+            var y = e.offsetY;
+            var i = Math.floor((x-15)/30);
+            var j = Math.floor((y-15)/30);
+            var msg=""+i+","+j+","+me
+            if( chessBox[i][j] == 0 ) {
+                try{ socket.send(msg); } catch(ex){ alert("lose connection!"); }
+                //oneStep(i,j,me);
+                if(me==1){
+                    chessBox[i][j]=1;
+                }else{
+                    chessBox[i][j]=2;
+                }
+            iswin(i,j)//print later than alert
+                
+                me=1-me;
+            }else{
+            	alert("illegal input!")
+            }
+        }
+        function iswin(i,j){
+        	var line1 = 1;
+        	var line2 = 1;
+        	var line3 = 1;
+        	var line4 = 1;
+        	var color = chessBox[i][j];
+        	for(var x = 1 ; x < 5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (i-x>=0)){
+        			if(chessBox[i-x][j] == color) line1++;
+        			else front = false;
+        		}
+        		if(back && (i+x<=18)){
+        			if(chessBox[i+x][j] == color) line1++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	for(var x = 1 ; x <5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (j-x>=0)){
+        			if(chessBox[i][j-x] == color)line2++;
+        			else front = false;
+        		}
+        		if(back && (j+x<=18)){
+        			if(chessBox[i][j+x] == color)line2++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	for(var x = 1 ; x <5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (j-x>=0) && (i-x>=0)){
+        			if(chessBox[i-x][j-x] == color)line3++;
+        			else front = false;
+        		}
+        		if(back && (j+x<=18) && (i+x<=18)){
+        			if(chessBox[i+x][j+x] == color)line3++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	for(var x = 1 ; x <5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (j+x<=18) && (i-x>=0)){
+        			if(chessBox[i-x][j+x] == color)line4++;
+        			else front = false;
+        		}
+        		if(back && (i+x<=18) && (j-x<=0)){
+        			if(chessBox[i+x][j-x] == color)line4++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	if(line1 == 5 || line2 == 5 || line3 == 5 || line4 == 5) alert('player' + color + 'win!')
+        }
+
+    </script>
+</body>
+</html>
