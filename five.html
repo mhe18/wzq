@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>five in a row local</title>
+    <style type="text/css">
+        canvas{
+        display: block;
+        margin: 50px auto;
+        box-shadow: -2px -2px 2px #F3F2F2, 5px 5px 5px #6F6767;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mycanvas" width="600px" height="600px"></canvas>
+    <script type="text/javascript">
+        var chess = document.getElementById("mycanvas");
+        var context = chess.getContext('2d');
+        var me = true;
+        var chessBox = [];
+        for(var i=0;i<19;i++){
+            chessBox[i]=[];
+            for(var j=0;j<19;j++){
+                chessBox[i][j]=0;
+            }
+        }
+        function drawChessBoard(){
+            for(var i=0;i<19;i++){
+                context.strokeStyle="#D6D1D1";
+                context.moveTo(30+i*30,30);
+                context.lineTo(30+i*30,570);
+                context.stroke();
+                context.moveTo(30,30+i*30);
+                context.lineTo(570,30+i*30);
+                context.stroke();
+            }
+        }
+        drawChessBoard();
+        function oneStep(i,j,k){
+            context.beginPath();
+            context.arc(30+i*30,30+j*30,13,0,2*Math.PI);
+            var g=context.createRadialGradient(30+i*30,30+j*30,13,30+i*30,30+j*30,0);
+            if(k){                           
+                g.addColorStop(0,'#0A0A0A');
+                g.addColorStop(1,'#636766');
+            }else {
+                g.addColorStop(0,'#D1D1D1');
+                g.addColorStop(1,'#F9F9F9');
+            }
+            context.fillStyle=g;
+            context.fill();
+            context.closePath();
+        }
+        chess.onclick=function(e){
+            var x = e.offsetX;
+            var y = e.offsetY;
+            var i = Math.floor(x/30);
+            var j = Math.floor(y/30);
+            if( chessBox[i][j] == 0 ) {
+                oneStep(i,j,me);
+                if(me){
+         
+                    chessBox[i][j]=1;
+                }else{
+                    chessBox[i][j]=2;
+                }
+                me=!me;
+            }
+        }
+    </script>
+</body>
+</html>
