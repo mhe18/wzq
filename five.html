@@ -54,19 +54,86 @@
         chess.onclick=function(e){
             var x = e.offsetX;
             var y = e.offsetY;
-            var i = Math.floor(x/30);
-            var j = Math.floor(y/30);
+            var i = Math.floor((x-15)/30);
+            var j = Math.floor((y-15)/30);
             if( chessBox[i][j] == 0 ) {
                 oneStep(i,j,me);
                 if(me){
-         
                     chessBox[i][j]=1;
                 }else{
                     chessBox[i][j]=2;
                 }
+                iswin(i,j)//print later than alert
                 me=!me;
+            }else{
+            	alert("illegal input!")
             }
         }
+        function iswin(i,j){
+        	var line1 = 1;
+        	var line2 = 1;
+        	var line3 = 1;
+        	var line4 = 1;
+        	var color = chessBox[i][j];
+        	for(var x = 1 ; x < 5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (i-x>=0)){
+        			if(chessBox[i-x][j] == color) line1++;
+        			else front = false;
+        		}
+        		if(back && (i+x<=18)){
+        			if(chessBox[i+x][j] == color) line1++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	for(var x = 1 ; x <5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (j-x>=0)){
+        			if(chessBox[i][j-x] == color)line2++;
+        			else front = false;
+        		}
+        		if(back && (j+x<=18)){
+        			if(chessBox[i][j+x] == color)line2++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	for(var x = 1 ; x <5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (j-x>=0) && (i-x>=0)){
+        			if(chessBox[i-x][j-x] == color)line3++;
+        			else front = false;
+        		}
+        		if(back && (j+x<=18) && (i+x<=18)){
+        			if(chessBox[i+x][j+x] == color)line3++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	for(var x = 1 ; x <5 ; x++)
+        	{    		
+        		var front = true
+        		var back = true;
+        		if(front && (j+x<=18) && (i-x>=0)){
+        			if(chessBox[i-x][j+x] == color)line4++;
+        			else front = false;
+        		}
+        		if(back && (i+x<=18) && (j-x<=0)){
+        			if(chessBox[i+x][j-x] == color)line4++;
+        			else back = false;
+        		}
+        		if(!front && !back) break;
+        	}
+        	if(line1 == 5 || line2 == 5 || line3 == 5 || line4 == 5) alert('player' + color + 'win!')
+        }
+
     </script>
 </body>
 </html>
