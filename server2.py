@@ -8,7 +8,7 @@ import time
 from base64 import b64encode, b64decode
 
 connectionlist = {}
-
+flag = 0
 
 # python3k 版本recv返回字节数组
 def decode(data):
@@ -98,10 +98,11 @@ class WebSocket(threading.Thread):
                     self.conn.send(str.encode(str(handshake)))
                     self.handshaken = True
                     print('Socket%s Handshaken with %s success!' % (self.index, self.remote))
-                    sendMessage('Welcome, ' + self.name + ' !')
+                    sendMessage('Welcome, ' + str(self.index))
 
             else:
                 msg = decode(self.conn.recv(1024))
+
                 if msg == 'quit':
                     print('Socket%s Logout!' % (self.index))
                     nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
@@ -110,9 +111,18 @@ class WebSocket(threading.Thread):
                     self.conn.close()
                     break
                 else:
-                    print('Socket%s Got msg:%s from %s!' % (self.index, msg, self.remote))
-                    nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
-                    sendMessage(msg)
+                    global flag, connectionlist
+                    # print(msg)
+                    if len(connectionlist) == 2:
+                        if flag == self.index:
+                            print('Socket%s Got msg:%s from %s!' % (self.index, msg, self.remote))
+                            nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
+                            sendMessage(msg)
+                            flag = 1-flag
+                        else:
+                            print(msg)
+                            #msg = 'illegal '
+                            print('Not this player\'s turn !')
 
             self.buffer = ""
 
@@ -125,7 +135,7 @@ class WebSocketServer(object):
         print('WebSocketServer Start!')
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind(("127.0.0.1", 12345))
-        self.socket.listen(50)
+        self.socket.listen(2)
 
         global connectionlist
 
