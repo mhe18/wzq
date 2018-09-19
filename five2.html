@@ -18,8 +18,11 @@
             try{
                 socket = new WebSocket(host);
                 socket.onopen    = function(msg){ drawChessBoard(); };
-                socket.onmessage = function(msg){ console.log(msg.data);var loc=msg.data.split(','); oneStep(loc[0],loc[1],loc[2]);};
-                socket.onclose   = function(msg){ alert("lose") };
+               socket.onmessage = function(msg){ console.log(msg.data);var loc=msg.data.split(',');
+                if(loc[0]!='Welcome')
+                oneStep(loc[0],loc[1],loc[2]);
+        };
+                socket.onclose   = function(msg){ alert("lose connection") };
                 }
             catch(ex){ log(ex); }
         //$("msg").focus();
