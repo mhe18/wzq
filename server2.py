@@ -9,6 +9,7 @@ from base64 import b64encode, b64decode
 
 connectionlist = {}
 flag = 0
+chessBox=[[-1]*19]*19
 
 # python3k 版本recv返回字节数组
 def decode(data):
@@ -53,6 +54,76 @@ def sendMessage(message):
 def deleteconnection(item):
     global connectionlist
     del connectionlist['connection' + item]
+
+def iswin(i, j):
+    global chessBox
+    line1 = 1
+    line2 = 1
+    line3 = 1
+    line4 = 1
+    color = chessBox[i][j]
+    for x in range(1, 4):
+        front = True
+        back = True
+        if front and i-x>=0:
+            if chessBox[i-x][j] == color:
+                line1+=1
+            else:
+                front = False
+        if back and i+x<=18:
+            if chessBox[i+x][j] == color:
+                line1 += 1
+            else:
+                back = False
+        if not front and not back:
+            break
+    for x in range(1, 4):
+        front = True
+        back = True
+        if front and j-x >= 0:
+            if chessBox[i][j-x] == color:
+                line2 += 1
+            else:
+                front = False
+        if back and j+x <= 18:
+            if chessBox[i][j+x] == color:
+                line2 += 1
+            else:
+                back = False
+        if not front and not back:
+            break
+    for x in range(1, 4):
+        front = True
+        back = True
+        if front and j-x >= 0 and i-x >= 0:
+            if chessBox[i-x][j-x] == color:
+                line3 += 1
+            else:
+                front = False
+        if back and j+x<=18 and i+x<=18:
+            if chessBox[i+x][j+x] == color:
+                line3++1
+            else:
+                back = False
+        if not front and not back:
+            break
+    for x in range(1,4):
+        front = True
+        back = True
+        if front and j+x<=18 and i-x>=0:
+            if chessBox[i-x][j+x] == color:
+                line4+=1
+            else:
+                front = False
+            if back and i+x<=18 and j-x<=0:
+                if chessBox[i+x][j-x] == color:
+                    line4+=1
+                else:
+                    back = False
+            if not front and not back:
+                break
+    if line1 == 5 or line2 == 5 or line3 == 5 or line4 == 5:
+                return True
 
 
 class WebSocket(threading.Thread):
@@ -111,12 +182,17 @@ class WebSocket(threading.Thread):
                     self.conn.close()
                     break
                 else:
-                    global flag, connectionlist
+                    global flag, connectionlist, chessBox
                     # print(msg)
                     if len(connectionlist) == 2:
                         if flag == self.index:
                             print('Socket%s Got msg:%s from %s!' % (self.index, msg, self.remote))
                             nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
+                            loc=msg.split(',')
+                            chessBox[int(loc[0])][int(loc[1])] = loc[2]
+                            if iswin(int(loc[0]), int(loc[1])):
+                                self.conn.close()
+                                print('Game Over')
                             sendMessage(msg)
                             flag = 1-flag
                         else:
