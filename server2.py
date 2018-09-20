@@ -172,33 +172,37 @@ class WebSocket(threading.Thread):
                     sendMessage('Welcome, ' + str(self.index))
 
             else:
+                global connectionlist
                 msg = decode(self.conn.recv(1024))
-
-                if msg == 'quit':
-                    print('Socket%s Logout!' % (self.index))
-                    nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
-                    sendMessage('%s %s say: %s' % (nowTime, self.remote, self.name + ' Logout'))
-                    deleteconnection(str(self.index))
-                    self.conn.close()
-                    break
+                if len(connectionlist)==1:
+                    msg = 'waiting for the next player!'
+                    sendMessage(msg)
                 else:
-                    global flag, connectionlist, chessBox
-                    # print(msg)
-                    if len(connectionlist) == 2:
-                        if flag == self.index:
-                            print('Socket%s Got msg:%s from %s!' % (self.index, msg, self.remote))
-                            nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
-                            loc=msg.split(',')
-                            chessBox[int(loc[0])][int(loc[1])] = loc[2]
-                            if iswin(int(loc[0]), int(loc[1])):
-                                self.conn.close()
-                                print('Game Over')
-                            sendMessage(msg)
-                            flag = 1-flag
-                        else:
-                            print(msg)
-                            #msg = 'illegal '
-                            print('Not this player\'s turn !')
+                    if msg == 'quit':
+                        print('Socket%s Logout!' % (self.index))
+                        nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
+                        sendMessage('%s %s say: %s' % (nowTime, self.remote, self.name + ' Logout'))
+                        deleteconnection(str(self.index))
+                        self.conn.close()
+                        break
+                    else:
+                        global flag, chessBox
+                        # print(msg)
+                        if len(connectionlist) == 2:
+                            if flag == self.index:
+                                print('Socket%s Got msg:%s from %s!' % (self.index, msg, self.remote))
+                                nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
+                                loc=msg.split(',')
+                                chessBox[int(loc[0])][int(loc[1])] = loc[2]
+                                if iswin(int(loc[0]), int(loc[1])):
+                                    self.conn.close()
+                                    print('Game Over')
+                                sendMessage(msg)
+                                flag = 1-flag
+                            else:
+                                print(msg)
+                                #msg = 'illegal '
+                                print('Not this player\'s turn !')
 
             self.buffer = ""
 

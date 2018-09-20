@@ -21,12 +21,16 @@
                socket.onmessage = function(msg) {
                    console.log(msg.data);
                    var loc = msg.data.split(',');
-                   if (loc[0] != 'Welcome') {
+                   if(loc[0]=='waiting for the next player!'){
+                       alert('Only One Player!')
+                   }
+                   else if (loc[0] != 'Welcome') {
                        oneStep(loc[0], loc[1], loc[2])
                        i = loc[0]
                        j = loc[1]
                        if (loc[2] == 0) {
                        chessBox[i][j] = 1;
+                       console.log("11111111111")
                    } else {
                        chessBox[i][j] = 2;
                    }
@@ -44,7 +48,7 @@
                                 me = 1
                             }
                         }
-                        console.log(me)
+                       // console.log(me)
                     }
             };
                 socket.onclose   = function(msg){ alert("lose connection") };
