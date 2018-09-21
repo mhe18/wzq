@@ -176,6 +176,7 @@ class WebSocket(threading.Thread):
             else:
                 global connectionlist
                 msg = decode(self.conn.recv(1024))
+                print(msg)
                 if len(connectionlist) == 1:
                     msg = 'waiting for the next player!'
                     sendMessage(msg)
@@ -205,7 +206,10 @@ class WebSocket(threading.Thread):
                                     break
                                 flag = 1-flag
                             else:
-                                print(msg)
+                               # print(msg)
+                                if msg == False:
+                                    self.conn.close()
+                                    break
                                 #msg = 'illegal '
                                 print('Not this player\'s turn !')
 
