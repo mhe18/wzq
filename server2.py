@@ -9,7 +9,7 @@ from base64 import b64encode, b64decode
 
 connectionlist = {}
 flag = 0
-chessBox=[[-1]*19]*19
+chessBox = [([-1] * 19) for p in range(19)]
 
 # python3k 版本recv返回字节数组
 def decode(data):
@@ -55,6 +55,7 @@ def deleteconnection(item):
     global connectionlist
     del connectionlist['connection' + item]
 
+
 def iswin(i, j):
     global chessBox
     line1 = 1
@@ -62,7 +63,7 @@ def iswin(i, j):
     line3 = 1
     line4 = 1
     color = chessBox[i][j]
-    for x in range(1, 4):
+    for x in range(1, 5):
         front = True
         back = True
         if front and i-x>=0:
@@ -77,7 +78,7 @@ def iswin(i, j):
                 back = False
         if not front and not back:
             break
-    for x in range(1, 4):
+    for x in range(1, 5):
         front = True
         back = True
         if front and j-x >= 0:
@@ -92,7 +93,7 @@ def iswin(i, j):
                 back = False
         if not front and not back:
             break
-    for x in range(1, 4):
+    for x in range(1, 5):
         front = True
         back = True
         if front and j-x >= 0 and i-x >= 0:
@@ -107,7 +108,7 @@ def iswin(i, j):
                 back = False
         if not front and not back:
             break
-    for x in range(1,4):
+    for x in range(1,5):
         front = True
         back = True
         if front and j+x<=18 and i-x>=0:
@@ -122,8 +123,9 @@ def iswin(i, j):
                     back = False
             if not front and not back:
                 break
+    print(line1,line2,line3,line4)
     if line1 == 5 or line2 == 5 or line3 == 5 or line4 == 5:
-                return True
+        return True
 
 
 class WebSocket(threading.Thread):
@@ -174,7 +176,7 @@ class WebSocket(threading.Thread):
             else:
                 global connectionlist
                 msg = decode(self.conn.recv(1024))
-                if len(connectionlist)==1:
+                if len(connectionlist) == 1:
                     msg = 'waiting for the next player!'
                     sendMessage(msg)
                 else:
@@ -191,12 +193,12 @@ class WebSocket(threading.Thread):
                         if len(connectionlist) == 2:
                             if flag == self.index:
                                 print('Socket%s Got msg:%s from %s!' % (self.index, msg, self.remote))
-                                nowTime = time.strftime('%H:%M:%S', time.localtime(time.time()))
                                 loc=msg.split(',')
-                                chessBox[int(loc[0])][int(loc[1])] = loc[2]
+                                chessBox[int(loc[0])][int(loc[1])] = int(loc[2])
                                 if iswin(int(loc[0]), int(loc[1])):
                                     self.conn.close()
                                     print('Game Over')
+                                    break
                                 sendMessage(msg)
                                 flag = 1-flag
                             else:

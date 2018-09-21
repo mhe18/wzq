@@ -30,7 +30,6 @@
                        j = loc[1]
                        if (loc[2] == 0) {
                        chessBox[i][j] = 1;
-                       console.log("11111111111")
                    } else {
                        chessBox[i][j] = 2;
                    }
@@ -48,7 +47,6 @@
                                 me = 1
                             }
                         }
-                       // console.log(me)
                     }
             };
                 socket.onclose   = function(msg){ alert("lose connection") };
