@@ -24,6 +24,9 @@
                    if(loc[0]=='waiting for the next player!'){
                        alert('Only One Player!')
                    }
+                   else if(loc[0]=='player win'){
+                       iswin(i, j)
+                   }
                    else if (loc[0] != 'Welcome') {
                        oneStep(loc[0], loc[1], loc[2])
                        i = loc[0]
@@ -32,9 +35,7 @@
                        chessBox[i][j] = 1;
                    } else {
                        chessBox[i][j] = 2;
-                   }
-                   iswin(i, j)//
-                  //oneStep(i,j,me);
+                   }0
                    }
                    else{
                         if(me == -1) {

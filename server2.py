@@ -195,11 +195,14 @@ class WebSocket(threading.Thread):
                                 print('Socket%s Got msg:%s from %s!' % (self.index, msg, self.remote))
                                 loc=msg.split(',')
                                 chessBox[int(loc[0])][int(loc[1])] = int(loc[2])
+                                sendMessage(msg)
                                 if iswin(int(loc[0]), int(loc[1])):
+                                    sendMessage('player win')
+                                    deleteconnection('0')
+                                    deleteconnection('1')
                                     self.conn.close()
                                     print('Game Over')
                                     break
-                                sendMessage(msg)
                                 flag = 1-flag
                             else:
                                 print(msg)
